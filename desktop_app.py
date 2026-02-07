@@ -28,26 +28,22 @@ class LoginWindow(QWidget):
         layout = QVBoxLayout()
         layout.setSpacing(20)
         
-        # Title
         title = QLabel('Chemical Equipment Visualizer')
         title.setFont(QFont('Arial', 18, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
         
-        # Username
         username_label = QLabel('Username:')
         self.username_input = QLineEdit()
         layout.addWidget(username_label)
         layout.addWidget(self.username_input)
         
-        # Password
         password_label = QLabel('Password:')
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.Password)
         layout.addWidget(password_label)
         layout.addWidget(self.password_input)
         
-        # Buttons
         button_layout = QHBoxLayout()
         
         login_btn = QPushButton('Login')
@@ -145,18 +141,16 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout()
         central_widget.setLayout(main_layout)
         
-        # Title
         title = QLabel('⚗️ Chemical Equipment Visualizer')
         title.setFont(QFont('Arial', 20, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet("color: #667eea; padding: 10px;")
         main_layout.addWidget(title)
         
-        # Create tab widget
         self.tabs = QTabWidget()
         main_layout.addWidget(self.tabs)
         
-        # Create tabs
+
         self.upload_tab = self.create_upload_tab()
         self.history_tab = self.create_history_tab()
         
@@ -167,7 +161,6 @@ class MainWindow(QMainWindow):
         tab = QWidget()
         layout = QVBoxLayout()
         
-        # Upload section
         upload_group = QGroupBox("Upload CSV File")
         upload_layout = QVBoxLayout()
         
@@ -192,7 +185,6 @@ class MainWindow(QMainWindow):
         upload_group.setLayout(upload_layout)
         layout.addWidget(upload_group)
         
-        # Statistics section
         stats_group = QGroupBox("Summary Statistics")
         stats_layout = QGridLayout()
         
@@ -212,7 +204,6 @@ class MainWindow(QMainWindow):
         stats_group.setLayout(stats_layout)
         layout.addWidget(stats_group)
         
-        # Charts section
         charts_group = QGroupBox("Visualizations")
         charts_layout = QHBoxLayout()
         
@@ -225,7 +216,6 @@ class MainWindow(QMainWindow):
         charts_group.setLayout(charts_layout)
         layout.addWidget(charts_group)
         
-        # Data table
         table_group = QGroupBox("Equipment Data")
         table_layout = QVBoxLayout()
         
@@ -234,7 +224,6 @@ class MainWindow(QMainWindow):
         self.data_table.setHorizontalHeaderLabels(['Equipment Name', 'Type', 'Flowrate', 'Pressure', 'Temperature'])
         table_layout.addWidget(self.data_table)
         
-        # Download PDF button
         pdf_btn = QPushButton('📥 Download PDF Report')
         pdf_btn.clicked.connect(self.download_pdf)
         pdf_btn.setStyleSheet("background-color: #4caf50; color: white; padding: 10px;")
@@ -299,7 +288,7 @@ class MainWindow(QMainWindow):
         try:
             headers = {'Authorization': f'Token {self.token}'} if self.token else {}
             
-            # Get dataset details
+           
             detail_response = requests.get(f'{API_BASE_URL}/datasets/{dataset_id}/', headers=headers)
             summary_response = requests.get(f'{API_BASE_URL}/datasets/{dataset_id}/summary/', headers=headers)
             
@@ -307,13 +296,12 @@ class MainWindow(QMainWindow):
                 detail_data = detail_response.json()
                 summary_data = summary_response.json()
                 
-                # Update statistics
+              
                 self.total_label.setText(f"Total Equipment: {summary_data['total_count']}")
                 self.flowrate_label.setText(f"Avg Flowrate: {summary_data['averages']['flowrate']:.2f}")
                 self.pressure_label.setText(f"Avg Pressure: {summary_data['averages']['pressure']:.2f}")
                 self.temp_label.setText(f"Avg Temperature: {summary_data['averages']['temperature']:.2f}")
                 
-                # Update table
                 equipment = detail_data['equipment']
                 self.data_table.setRowCount(len(equipment))
                 
@@ -324,14 +312,12 @@ class MainWindow(QMainWindow):
                     self.data_table.setItem(i, 3, QTableWidgetItem(f"{item['pressure']:.2f}"))
                     self.data_table.setItem(i, 4, QTableWidgetItem(f"{item['temperature']:.2f}"))
                 
-                # Update charts
                 self.update_charts(summary_data['type_distribution'], summary_data['averages'])
                 
         except Exception as e:
             QMessageBox.critical(self, 'Error', f'Failed to load dataset: {str(e)}')
     
     def update_charts(self, type_distribution, averages):
-        # Pie chart
         self.pie_chart.axes.clear()
         labels = list(type_distribution.keys())
         sizes = list(type_distribution.values())
@@ -339,7 +325,6 @@ class MainWindow(QMainWindow):
         self.pie_chart.axes.set_title('Equipment Type Distribution')
         self.pie_chart.draw()
         
-        # Bar chart
         self.bar_chart.axes.clear()
         params = ['Flowrate', 'Pressure', 'Temperature']
         values = [averages['flowrate'], averages['pressure'], averages['temperature']]
@@ -396,8 +381,7 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    
-    # Set application style
+     
     app.setStyle('Fusion')
     
     main_window = MainWindow()
